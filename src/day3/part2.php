@@ -1,4 +1,4 @@
-<?php // TODO add types
+<?php
 
 $array = [
     0b111111010011,
@@ -1004,15 +1004,15 @@ $array = [
 ];
 $rank = 12;
 
-function getMaskForPosition($position, $rank){
+function getMaskForPosition(int $position, int $rank): int {
     return 1 << $rank - $position;
 }
 
-function isBitSetWithMask($number, $mask) {
+function isBitSetWithMask(int $number, int $mask): bool {
     return ($number & $mask) !== 0;
 }
 
-function getMostCommonBitForMask($numbers, $mask) {
+function getMostCommonBitForMask(array $numbers, int $mask): int {
     $sum = 0;
     $numbersCount = count($numbers);
     foreach ($numbers as $number) {
@@ -1023,7 +1023,7 @@ function getMostCommonBitForMask($numbers, $mask) {
     return (int)(50 <= $sum * 100 / $numbersCount);
 }
 
-function getLeastCommonBitForMask($numbers, $mask) {
+function getLeastCommonBitForMask(array $numbers, int $mask): int {
     $sum = 0;
     $numbersCount = count($numbers);
     foreach ($numbers as $number) {
@@ -1034,23 +1034,23 @@ function getLeastCommonBitForMask($numbers, $mask) {
     return (int)(50 > $sum * 100 / $numbersCount);
 }
 
-function getMostCommonBitForPosition($numbers, $position, $rank) {
+function getMostCommonBitForPosition(array $numbers, int $position, int $rank): int {
     $mask = getMaskForPosition($position, $rank);
     return getMostCommonBitForMask($numbers, $mask);
 }
 
-function getLeastCommonBitForPosition($numbers, $position, $rank) {
+function getLeastCommonBitForPosition(array $numbers, int $position, int $rank): int {
     $mask = getMaskForPosition($position, $rank);
     return getLeastCommonBitForMask($numbers, $mask);
 }
 
-function isBitWithMaskMatchGivenBit($number, $mask, $givenBit) {
+function isBitWithMaskMatchGivenBit(int $number, int $mask, int $givenBit): bool {
     $isBitSet = isBitSetWithMask($number, $mask);
 
-    return (int) $isBitSet === $givenBit;
+    return $givenBit === (int)$isBitSet;
 }
 
-function filterNumberByMostCommonBitInPosition($numbers, $position, $rank) {
+function filterNumberByMostCommonBitInPosition(array $numbers, int $position, int $rank): array {
     $mask = getMaskForPosition($position, $rank);
     $mostCommonBit = getMostCommonBitForPosition($numbers, $position, $rank);
 
@@ -1059,7 +1059,7 @@ function filterNumberByMostCommonBitInPosition($numbers, $position, $rank) {
     });
 }
 
-function filterNumberByLeastCommonBitInPosition($numbers, $position, $rank) {
+function filterNumberByLeastCommonBitInPosition(array $numbers, int $position, int $rank): array {
     $mask = getMaskForPosition($position, $rank);
     $leastCommonBit = getLeastCommonBitForPosition($numbers, $position, $rank);
 
@@ -1068,7 +1068,7 @@ function filterNumberByLeastCommonBitInPosition($numbers, $position, $rank) {
     });
 }
 
-function getOxygenGeneratorRating($numbers, $rank) {
+function getOxygenGeneratorRating(array $numbers, int $rank): int {
     $result = null;
 
     $positions = range(1, $rank);
@@ -1083,7 +1083,7 @@ function getOxygenGeneratorRating($numbers, $rank) {
     return $result;
 }
 
-function getCO2ScrubberRating($numbers, $rank) {
+function getCO2ScrubberRating(array $numbers, int $rank): int {
     $result = null;
 
     $positions = range(1, $rank);

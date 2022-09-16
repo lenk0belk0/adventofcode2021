@@ -11,5 +11,7 @@
             "email": "el.n.anisimova@yandex.ru"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "7.3.*"
+    }
 }

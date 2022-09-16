@@ -1,0 +1,15 @@
+{
+    "name": "lenk0belk0/advenofcode2021",
+    "autoload": {
+        "psr-4": {
+            "Lenk0belk0\\Advenofcode2021\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Elena Anisimova",
+            "email": "el.n.anisimova@yandex.ru"
+        }
+    ],
+    "require": {}
+}

@@ -1,4 +1,4 @@
-<?php
+<?php // TODO add types
 
 $array = [
     0b111111010011,

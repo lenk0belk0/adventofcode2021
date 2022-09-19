@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 $array = [
     0b111111010011,

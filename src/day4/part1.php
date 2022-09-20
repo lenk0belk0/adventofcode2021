@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+include_once __DIR__ . '/functions.php';
+
 $digits = [73,42,95,35,13,40,99,92,33,30,83,1,36,93,59,90,55,25,77,44,37,62,41,47,80,23,51,61,21,20,76,8,71,34,58,5,52,22,39,57,17,2,26,0,10,72,19,3,64,65,82,46,31,63,91,24,18,12,9,79,50,98,69,4,78,54,43,68,87,7,67,48,28,89,94,53,85,81,49,88,6,96,29,56,97,66,38,16,32,70,74,27,84,86,45,75,60,15,14,11];
 $boards = [[
 [91,  5, 64, 81, 34,],
@@ -625,118 +627,13 @@ $exampleBoards = [[
 [ 2,  0, 12,  3,  7,],
 ]];
 
-// TODO think about bit masks
-CONST MARKED_BOARD_CELL = 1;
-CONST UNMARKED_BOARD_CELL = 0;
-
-function findNumberInBoardRow(array $row, int $number): ?int {
-    foreach ($row as $columnIndex => $numberInRow) {
-        if ($number === $numberInRow) {
-            return $columnIndex;
-        }
-    }
-
-    return null;
-}
-
-function findNumberInBoard(array $board, int $number): ?array {
-    foreach ($board as $rowIndex => $row) {
-        $columnIndex = findNumberInBoardRow($row, $number);
-        if ($columnIndex !== null) {
-            return [$rowIndex, $columnIndex];
-        }
-    }
-
-    return null;
-}
-
-function getEmptyBoard(array $board): array {
-    $result = [];
-    foreach ($board as $rowIndex => $row) {
-        foreach ($row as $columnIndex => $value) {
-            $result[$rowIndex][$columnIndex] = UNMARKED_BOARD_CELL;
-        }
-    }
-
-    return $result;
-}
-
-function markNumberInBoard(array $board, $rowIndex, $columnIndex): array
-{
-    $board[$rowIndex][$columnIndex] = MARKED_BOARD_CELL;
-    return $board;
-}
-
-function isRowInBoardMarked(array $board, int $rowIndex): bool {
-    $rowNumbers = $board[$rowIndex];
-    foreach ($rowNumbers as $number) {
-        if ($number === UNMARKED_BOARD_CELL) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function isColumnInBoardMarked(array $board, $columnIndex): bool
-{
-    $columnNumbers = array_column($board, $columnIndex);
-    foreach ($columnNumbers as $number) {
-        if ($number === UNMARKED_BOARD_CELL) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function playBingoWithOneBoard(array $board, array &$markedBoard, $number): bool
-{
-    $rowColumnIndexList = findNumberInBoard($board, $number);
-    if ($rowColumnIndexList !== null) {
-        [$rowIndex, $columnIndex] = $rowColumnIndexList;
-        $markedBoard = markNumberInBoard($markedBoard, $rowIndex, $columnIndex);
-        $isRowWon = isRowInBoardMarked($markedBoard, $rowIndex);
-        $isColumnWon = isColumnInBoardMarked($markedBoard, $columnIndex);
-
-        return $isRowWon || $isColumnWon;
-    }
-
-    return false;
-}
-
-function playBingoWithSeveralBoards(array $boards, array &$markedBoards, int $number): ?int {
-    foreach ($boards as $index => $board) {
-        $isBoardWinner = playBingoWithOneBoard($board, $markedBoards[$index], $number);
-        if ($isBoardWinner) {
-            return $index;
-        }
-    }
-
-    return null;
-}
-
-function calculateScore($board, $markedBoard, $number): int {
-    $result = 0;
-    foreach ($board as $rowIndex => $row) {
-        foreach ($row as $columnIndex => $value) {
-            if($markedBoard[$rowIndex][$columnIndex] === UNMARKED_BOARD_CELL) {
-                $result += $value;
-            }
-        }
-    }
-
-    return $result * $number;
-}
-
 function playBingo(array $boards, array $numbers): ?int {
-    $markedBoards = [];
-    foreach ($boards as $board) {
-        $markedBoards[] = getEmptyBoard($board);
-    }
+    $markedBoards = getEmptyBoards($boards);
 
     foreach ($numbers as $number) {
-        $winnerBoardIndex = playBingoWithSeveralBoards($boards, $markedBoards, $number);
-        if ($winnerBoardIndex !== null) {
+        $winnerBoardIndexList = playBingoWithSeveralBoards($boards, $markedBoards, $number);
+        if ($winnerBoardIndexList !== null) {
+            $winnerBoardIndex = $winnerBoardIndexList[0];
             return calculateScore($boards[$winnerBoardIndex], $markedBoards[$winnerBoardIndex], $number);
         }
     }
@@ -744,20 +641,5 @@ function playBingo(array $boards, array $numbers): ?int {
     return null;
 }
 
-//$testBoard = [[1, 2, 3], [6, 8, 4], [10, 5, 7]];
-//echo sprintf("test returns right position for number: %d\n", findNumberInBoardRow($testBoard[2], 10) === 0);
-//echo sprintf("test return null if there is no number in row: %d\n", findNumberInBoardRow($testBoard[2], 1) === null);
-//echo sprintf("test returns right positions for number in board: %d\n", findNumberInBoard($testBoard, 10) === [2, 0]);
-//echo sprintf("test can get empty board: %d\n", getEmptyBoard($testBoard) === [[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
-//echo sprintf("test can mark number in board: %d\n", markNumberInBoard(getEmptyBoard($testBoard), 1, 1) === [[0, 0, 0], [0, 1, 0], [0, 0, 0]]);
-//echo sprintf("test can check marked row: %d\n", isRowInBoardMarked([[1, 1, 1]], 0) === true);
-//echo sprintf("test can check marked row: %d\n", isRowInBoardMarked([[0, 1, 1]], 0) === false);
-//echo sprintf("test can check marked row: %d\n", isRowInBoardMarked([[1, 1, 0]], 0) === false);
-//echo sprintf("test can check marked column: %d\n", isColumnInBoardMarked([[1, 1, 0], [1, 0, 0], [1, 1, 0]], 0) === true);
-//echo sprintf("test can check marked column: %d\n", isColumnInBoardMarked([[1, 1, 0], [1, 0, 0], [1, 1, 0]], 1) === false);
-//
-//$emptyTestBoard = getEmptyBoard($testBoard);
-//echo sprintf("test can play one board round %d\n", playBingoWithOneBoard($testBoard, $emptyTestBoard, 1) === false);
-
 $score = playBingo($boards, $digits);
-echo sprintf("score is: %d\n", $score);
+echo sprintf("bingo score is: %d\n", $score);
